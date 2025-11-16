@@ -1,0 +1,36 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>3D TIC TAC TOE</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.181.1/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.1/examples/jsm/"
+      }
+    }
+    </script>
+  </head>
+  <body>
+    <div id="gameContainer">
+      <!-- canvas will be appended here -->
+       <div class="ui-elements">
+        <!-- pause and restart buttons-->
+         <div id="buttons">
+          <button id="pauseButton">II</button>
+          <button id="restartButton">⟲</button>
+          <list id="playerInfo">
+            <li id="P1">P1 - X </li>
+            <li id="P2">P2 - O </li>
+          </list>
+         </div>
+        <!-- pause menu -->  
+         <div id="pauseMenu" class="menu">
+           <h2 id="Message">Game Paused</h2>
+           <button id="resumeButton">Resume</button>      
+       </div>
+    </div>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
