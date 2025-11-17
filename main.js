@@ -5,8 +5,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // Scene setup
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(120, window.innerWidth / window.innerHeight, 1, 100);
-camera.position.z = 4;
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
+camera.position.z = 20;
 
 const container = document.getElementById('gameContainer');
 
@@ -26,8 +26,8 @@ window.addEventListener('resize', onWindowResize);
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.enablePan = false;
-controls.maxDistance = 4;
-controls.minDistance = 2.5;
+controls.maxDistance = 25;
+controls.minDistance = 20;
 controls.enableRotate = true;
 controls.enableZoom = true;
 controls.minPolarAngle = Math.PI / 2.4;
@@ -62,7 +62,7 @@ function updateTurnIndicator() {
     
     if (gameState.currentPlayer === 'player1') {
         // Player 1's turn - highlight P1
-        player1.style.scale = "1.5";
+        player1.style.scale = "1.3";
         player1.style.color = "#71E700FF"; // Bright green
         player1.style.transition = "scale 0.3s ease, color 0.3s ease";
         
@@ -76,7 +76,7 @@ function updateTurnIndicator() {
         player1.style.color = "white"; // Dimmed
         player1.style.transition = "scale 0.3s ease, color 0.3s ease";
         
-        player2.style.scale = "1.5";
+        player2.style.scale = "1.3";
         player2.style.color = "#0427E7FF"; // Bright blue
         player2.style.transition = "scale 0.3s ease, color 0.3s ease";
     }
@@ -128,7 +128,7 @@ xPieceModelLoader.load('assets/3D models/Xs mesh.glb', (gltf) => {
     }
     xPieceModel = gltf.scene;
     scene.add(xPieceModel);
-    xPieceModel.position.set(-1, -20, 0);
+    xPieceModel.position.set(-1, -40, 0);
 });
 
 // Load O model
@@ -139,7 +139,7 @@ oPieceModelLoader.load('assets/3D models/Os mesh.glb', (gltf) => {
     }
     oPieceModel = gltf.scene;
     scene.add(oPieceModel);
-    oPieceModel.position.set(1, -20, 0);
+    oPieceModel.position.set(1, -40, 0);
 });
 
 // Button functionality
@@ -328,12 +328,18 @@ function resetGame() {
     resumeButton.textContent = "Resume";
     resumeButton.style.pointerEvents = 'none';
 
+    // Reset camera position and controls
+    camera.position.set(0, 0, 20); // Reset to initial position
+    camera.lookAt(0, 0, 0); // Look at center of scene
+    controls.reset(); // Reset OrbitControls to initial state
+    controls.enabled = false;
+
     controls.enabled = false;
     
     setTimeout(() => {
         controls.enabled = true;
         gameState.canPlacePieces = true;
-    }, 1000);
+    }, 250);
 
     console.log("Game reset!");
 }

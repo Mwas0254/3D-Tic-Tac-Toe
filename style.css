@@ -27,15 +27,15 @@ body {
 
 #playerInfo {
     position: absolute;
-    top: 100px;
-    left: 0px;
+    top: 200px;
+    left: -5px;
     color: white;
     font-size: 18px;
     background-color: rgba(0, 0, 0, 0.5);
-    padding-left: 10px;
+    padding-left: 20px;
     padding-right: 40px;
     border: #f0f0f0 solid 3px;
-    border-radius: 10px;
+    border-radius: 20px;
     list-style: none;
 }
 
@@ -45,6 +45,7 @@ body {
     padding-top: 10px;
     padding-right: 0px;
     padding-left: 20px;
+    font-size: 35px;
 }
 
 #P1 {
@@ -62,7 +63,7 @@ body {
     transform: translate(-50%, -50%);
     background-color: rgba(97, 125, 136, 0.8);
     color: white;
-    padding: 150px;
+    padding: 100px 250px;
     border: #f0f0f0 solid 5px;
     border-radius: 40px;
     opacity: 0;
@@ -71,25 +72,30 @@ body {
     display: none;
 }
 
+#Message {
+    font-size: 50px;
+}
+
 #resumeButton {
     margin-top: 20px;
     padding: 10px 20px;
     border: #f0f0f0 solid 3px;
-    border-radius: 10px;
+    border-radius: 25px;
     background: transparent;
     font-size: 16px;
     color: white;
     cursor: pointer;
     pointer-events: none;
+    font-size: 50px;
 }
 
 #restartButton, #pauseButton {
     margin-top: 20px;
     padding: 10px 20px;
     border: #f0f0f0 solid 3px;
-    border-radius: 10px;
+    border-radius: 20px;
     background: transparent;
-    font-size: 16px;
+    font-size: 50px;
     color: white;
     cursor: pointer;
     pointer-events: all;
@@ -97,5 +103,5 @@ body {
 
 #resumeButton:hover, #restartButton:hover, #pauseButton:hover {
     background-color: rgba(255, 255, 255, 0.2);
-    scale: 1.05;
+    scale: 1.2;
 }
