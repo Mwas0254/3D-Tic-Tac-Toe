@@ -45,7 +45,7 @@ body {
     padding-top: 10px;
     padding-right: 0px;
     padding-left: 20px;
-    font-size: 35px;
+    font-size: 20px;
 }
 
 #P1 {
@@ -104,4 +104,39 @@ body {
 #resumeButton:hover, #restartButton:hover, #pauseButton:hover {
     background-color: rgba(255, 255, 255, 0.2);
     scale: 1.2;
+}
+
+#gameModeSwitch {
+    position: absolute;
+    top: 400px;
+    left: -20px;
+}
+
+#modeButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: #f0f0f0 solid 3px;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 20px;
+    color: white;
+    cursor: pointer;
+    pointer-events: all;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+#modeButton:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    scale: 1.05;
+}
+
+#modeButton.pvp {
+    background-color: rgba(113, 231, 0, 0.3);
+    border-color: #71E700FF;
+}
+
+#modeButton.pvc {
+    background-color: rgba(4, 39, 231, 0.3);
+    border-color: #0427E7FF;
 }

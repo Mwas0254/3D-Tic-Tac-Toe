@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { AIPlayer } from './ai.js';
 
 // Scene setup
 const scene = new THREE.Scene();
@@ -52,8 +53,13 @@ const gameState = {
     gameActive: true,
     occupiedTiles: new Map(),
     movesCount: 0,
-    canPlacePieces: true
+    canPlacePieces: true,
+    gameMode: 'pvp', // 'pvp' for player vs player, 'pvc' for player vs computer
+    aiThinking: false // Track if AI is currently "thinking"
 };
+
+// Create AI instance
+const aiPlayer = new AIPlayer('random');
 
 // Define updateTurnIndicator BEFORE calling it
 function updateTurnIndicator() {
@@ -175,11 +181,58 @@ resumeButton.addEventListener('click', () => {
 // Restart button
 restartButton.addEventListener('click', resetGame);
 
+const modeButton = document.getElementById('modeButton');
+
+// Initializing game mode
+initializeGameMode();
+
+// Game mode switch functionality
+modeButton.addEventListener('click', switchGameMode);
+
+function switchGameMode() {
+    if (gameState.gameActive && gameState.movesCount > 0) {
+        console.log("Cannot switch mode during active game. Reset first.");
+        return;
+    }
+    
+    if (gameState.gameMode === 'pvp') {
+        // Switch to Player vs Computer
+        gameState.gameMode = 'pvc';
+        modeButton.textContent = "VS PLAYER";
+        modeButton.classList.remove('pvp');
+        modeButton.classList.add('pvc');
+        
+        // Update player 2 label
+        const player2 = document.getElementById('P2');
+        player2.textContent = "COMP - O";
+        
+        console.log("Switched to Player vs Computer mode");
+    } else {
+        // Switch to Player vs Player
+        gameState.gameMode = 'pvp';
+        modeButton.textContent = "VS COMPUTER";
+        modeButton.classList.remove('pvc');
+        modeButton.classList.add('pvp');
+        
+        // Update player 2 label
+        const player2 = document.getElementById('P2');
+        player2.textContent = "P2 - O";
+        
+        console.log("Switched to Player vs Player mode");
+    }
+    
+    // Update turn indicator to reflect current state
+    updateTurnIndicator();
+}
+
 // Mouse click functionality
 const mouse = new THREE.Vector2();
 
 function onMouseClick(event) {
-    if (gameState.isPaused || !gameState.gameActive || !gameState.canPlacePieces) return;
+    if (gameState.isPaused || !gameState.gameActive || !gameState.canPlacePieces || gameState.aiThinking) return;
+    
+    // In PvC mode, only allow clicks when it's player's turn
+    if (gameState.gameMode === 'pvc' && gameState.currentPlayer !== 'player1') return;
 
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -199,10 +252,40 @@ function onMouseClick(event) {
         }
         
         placePiece(intersectedTile, tileName);
+        
+        // If in PvC mode and game is still active, trigger AI move
+        if (gameState.gameMode === 'pvc' && gameState.gameActive && gameState.currentPlayer === 'player2') {
+            setTimeout(() => makeAIMove(), 500); // Small delay before AI moves
+        }
     }
 }
 
 container.addEventListener('click', onMouseClick, false);
+
+// AI move function
+async function makeAIMove() {
+    if (!gameState.gameActive || gameState.isPaused || gameState.currentPlayer !== 'player2') return;
+    
+    gameState.aiThinking = true;
+    console.log("AI is thinking...");
+    
+    try {
+        // Get AI move with a small delay to simulate thinking
+        const aiMoveTileName = await aiPlayer.getMoveWithDelay(gameState, tilePositionMap, 100);
+        
+        if (aiMoveTileName) {
+            // Find the tile object by name
+            const aiTile = tileObjs.find(tile => tile.name === aiMoveTileName);
+            if (aiTile) {
+                placePiece(aiTile, aiMoveTileName);
+            }
+        }
+    } catch (error) {
+        console.error("AI move error:", error);
+    } finally {
+        gameState.aiThinking = false;
+    }
+}
 
 function placePiece(intersectedTile, tileName) {
     const pieceClone = gameState.currentPlayer === 'player1' 
@@ -277,6 +360,7 @@ function checkWinCondition() {
 
 function endGame(result) {
     gameState.gameActive = false;
+    gameState.aiThinking = false;
     
     const pauseMenu = document.getElementById('pauseMenu');
     const message = document.getElementById('Message');
@@ -289,17 +373,21 @@ function endGame(result) {
     
     if (result === 'player1') {
         message.textContent = "Player 1 Wins!";
-        controls.enabled = false;
         console.log("Player 1 wins!");
     } else if (result === 'player2') {
-        message.textContent = "Player 2 Wins!";
-        controls.enabled = false;
-        console.log("Player 2 wins!");
+        if (gameState.gameMode === 'pvc') {
+            message.textContent = "Computer Wins!";
+            console.log("Computer wins!");
+        } else {
+            message.textContent = "Player 2 Wins!";
+            console.log("Player 2 wins!");
+        }
     } else {
         message.textContent = "It's a Draw!";
-        controls.enabled = false;
         console.log("It's a draw!");
     }
+    
+    controls.enabled = false;
 }
 
 function resetGame() {
@@ -314,6 +402,7 @@ function resetGame() {
     gameState.gameActive = true;
     gameState.isPaused = false;
     gameState.canPlacePieces = false;
+    gameState.aiThinking = false;
 
     const pauseMenu = document.getElementById('pauseMenu');
     const message = document.getElementById('Message');
@@ -339,9 +428,26 @@ function resetGame() {
     setTimeout(() => {
         controls.enabled = true;
         gameState.canPlacePieces = true;
+
+        // If in PvC mode and AI goes first, trigger AI move
+        if (gameState.gameMode === 'pvc' && gameState.currentPlayer === 'player2') {
+            setTimeout(() => makeAIMove(), 500);
+        }
     }, 250);
 
     console.log("Game reset!");
+}
+
+// Initialize the mode button on game start
+function initializeGameMode() {
+    // Set initial button state
+    if (gameState.gameMode === 'pvp') {
+        modeButton.textContent = "VS COMPUTER";
+        modeButton.classList.add('pvp');
+    } else {
+        modeButton.textContent = "VS PLAYER";
+        modeButton.classList.add('pvc');
+    }
 }
 
 // Animation loop
