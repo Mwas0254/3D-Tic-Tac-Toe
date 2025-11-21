@@ -3,6 +3,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import { AIPlayer } from './ai.js';
+import { SkinManager } from './skinmanager.js';
 
 // Scene setup
 const scene = new THREE.Scene();
@@ -59,14 +60,16 @@ controls.minAzimuthAngle = -Math.PI / 16;
 controls.maxAzimuthAngle = Math.PI / 16;
 
 // Load Bounds GLTF model
+/* 
 const boundsGltfLoader = new GLTFLoader();
-boundsGltfLoader.load('assets/3D models/Bounds (UW).glb', (gltf) => {
+boundsGltfLoader.load('assets/3D models/Bounds (GN).glb', (gltf) => {
     if (!gltf.scene) {
         console.warn('Bounds GLTF model not found or failed to load.');
     }
     const boundsModel = gltf.scene;
     scene.add(boundsModel);
 });
+*/
 
 // Game state object
 const gameState = {
@@ -80,17 +83,106 @@ const gameState = {
     aiThinking: false // Track if AI is currently "thinking"
 };
 
+const skinmanager = new SkinManager();
+const aiPlayer = new AIPlayer('random');
+
+// Global variables for models
+let boundsModel = null;
+let tileObjs = [];
+let xPieceModel = null;
+let oPieceModel = null;
+let placedPieces = [];
+
+// GLTF Loader instance
+const gltfLoader = new GLTFLoader();
+
+// Load a specific skin
+async function loadSkin(skinName) {
+    const skin = skinmanager.getSkin(skinName);
+    gameState.currentSkin = skinName;
+    
+    console.log(`Loading skin: ${skin.name}`);
+    
+    // Clear existing models
+    if (boundsModel) scene.remove(boundsModel);
+    tileObjs.forEach(tile => scene.remove(tile));
+    placedPieces.forEach(piece => scene.remove(piece));
+    if (xPieceModel) scene.remove(xPieceModel);
+    if (oPieceModel) scene.remove(oPieceModel);
+    
+    // Reset arrays
+    tileObjs = [];
+    placedPieces = [];
+    
+    // Load new models
+    await loadBounds(skin.bounds);
+    await loadTiles(skin.tiles);
+    await loadXPieces(skin.xPiece);
+    await loadOPieces(skin.oPiece);
+    
+    console.log(`Skin "${skin.name}" loaded successfully`);
+}
+
+// Individual load functions
+function loadBounds(path) {
+    return new Promise((resolve) => {
+        gltfLoader.load(path, (gltf) => {
+            boundsModel = gltf.scene;
+            scene.add(boundsModel);
+            resolve();
+        });
+    });
+}
+
+function loadTiles(path) {
+    return new Promise((resolve) => {
+        gltfLoader.load(path, (gltf) => {
+            const playTiles = gltf.scene;
+            scene.add(playTiles);
+
+            playTiles.traverse((child) => {
+                if (child.isMesh) {
+                    tileObjs.push(child);
+                }
+            });
+            resolve();
+        });
+    });
+}
+
+function loadXPieces(path) {
+    return new Promise((resolve) => {
+        gltfLoader.load(path, (gltf) => {
+            xPieceModel = gltf.scene;
+            scene.add(xPieceModel);
+            xPieceModel.position.set(-1, -20, 0); // Hide off-screen
+            resolve();
+        });
+    });
+}
+
+function loadOPieces(path) {
+    return new Promise((resolve) => {
+        gltfLoader.load(path, (gltf) => {
+            oPieceModel = gltf.scene;
+            scene.add(oPieceModel);
+            oPieceModel.position.set(1, -20, 0); // Hide off-screen
+            resolve();
+        });
+    });
+}
+
 // Load BG model
+/*
 const bgGltfLoader = new GLTFLoader();
-bgGltfLoader.load('assets/3D models/BG mesh (UW).glb', (gltf) => {
+bgGltfLoader.load('assets/3D models/BG mesh (GN).glb', (gltf) => {
     if (!gltf.scene) {
         console.warn('BG GLTF model not found or failed to load.');
     }
     const bgModel = gltf.scene;
     scene.add(bgModel);
 })
-// Create AI instance
-const aiPlayer = new AIPlayer('random');
+*/
 
 // Define updateTurnIndicator BEFORE calling it
 function updateTurnIndicator() {
@@ -134,10 +226,8 @@ const tilePositionMap = {
     'T9': { row: 2, col: 2, index: 8 }
 };
 
-let tileObjs = [];
-let placedPieces = [];
-
 // Load Tic Tac Toe Play Tiles GLTF model
+/*
 const tilesGltfLoader = new GLTFLoader();
 tilesGltfLoader.load('assets/3D models/PlayTiles mesh.glb', (gltf) => {
     if (!gltf.scene) {
@@ -153,13 +243,12 @@ tilesGltfLoader.load('assets/3D models/PlayTiles mesh.glb', (gltf) => {
         }
     });
 });
-
-let xPieceModel = null;
-let oPieceModel = null;
+*/
 
 // Load X model
+/*
 const xPieceModelLoader = new GLTFLoader();
-xPieceModelLoader.load('assets/3D models/Xs mesh (UW).glb', (gltf) => {
+xPieceModelLoader.load('assets/3D models/Xs mesh (GN) 2.glb', (gltf) => {
     if (!gltf.scene) {
         console.warn('X GLTF model not found or failed to load.');
     }
@@ -167,10 +256,12 @@ xPieceModelLoader.load('assets/3D models/Xs mesh (UW).glb', (gltf) => {
     scene.add(xPieceModel);
     xPieceModel.position.set(-1, -40, 0);
 });
+*/
 
 // Load O model
+/*
 const oPieceModelLoader = new GLTFLoader();
-oPieceModelLoader.load('assets/3D models/Os mesh (UW).glb', (gltf) => {
+oPieceModelLoader.load('assets/3D models/Os mesh (GN) 2.glb', (gltf) => {
     if (!gltf.scene) {
         console.warn('O GLTF model not found or failed to load.');
     }
@@ -178,6 +269,7 @@ oPieceModelLoader.load('assets/3D models/Os mesh (UW).glb', (gltf) => {
     scene.add(oPieceModel);
     oPieceModel.position.set(1, -40, 0);
 });
+*/
 
 // Button functionality
 const pauseButton = document.getElementById('pauseButton');
@@ -421,7 +513,12 @@ function endGame(result) {
     controls.enabled = false;
 }
 
-function resetGame() {
+async function resetGame() {
+
+    // Get random skin
+    const randomSkin = skinmanager.getRandomSkin();
+    await loadSkin(randomSkin);
+
     placedPieces.forEach(piece => {
         scene.remove(piece);
     });
@@ -453,8 +550,6 @@ function resetGame() {
     camera.lookAt(0, 0, 0); // Look at center of scene
     controls.reset(); // Reset OrbitControls to initial state
     controls.enabled = false;
-
-    controls.enabled = false;
     
     setTimeout(() => {
         controls.enabled = true;
@@ -468,6 +563,8 @@ function resetGame() {
 
     console.log("Game reset!");
 }
+
+loadSkin('classic');
 
 // Initialize the mode button on game start
 function initializeGameMode() {
