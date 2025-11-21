@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
 import { AIPlayer } from './ai.js';
 
 // Scene setup
@@ -23,6 +24,27 @@ function onWindowResize() {
 }
 window.addEventListener('resize', onWindowResize);
 
+RectAreaLightUniformsLib.init();
+
+const lightcolor1n2 = 0xE8FCFF;
+const lightcolor3n4 = 0xFFF5E8;
+const lightcolor5 = 0xFFFFFF;
+const lightintensity = 100;
+const width = 12;
+const height = 4;
+const light1 = new THREE.PointLight(lightcolor1n2, lightintensity);
+const light2 = new THREE.PointLight(lightcolor1n2, lightintensity);
+const light3 = new THREE.PointLight(lightcolor3n4, lightintensity);
+const light4 = new THREE.PointLight(lightcolor3n4, lightintensity);
+const light5 = new THREE.RectAreaLight(lightcolor5, lightintensity, width, height);;
+light1.position.set(-5, 5, 10);
+light2.position.set(-5, -5, 10);
+light3.position.set(5, 5, 10);
+light4.position.set(5, -5, 10);
+light5.position.set(0, 25, 20);
+light5.rotation.x = THREE.MathUtils.degToRad(-90);
+scene.add(light1, light2, light3, light4, light5);
+
 // OrbitControls setup
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
@@ -38,7 +60,7 @@ controls.maxAzimuthAngle = Math.PI / 16;
 
 // Load Bounds GLTF model
 const boundsGltfLoader = new GLTFLoader();
-boundsGltfLoader.load('assets/3D models/Bounds.glb', (gltf) => {
+boundsGltfLoader.load('assets/3D models/Bounds (UW).glb', (gltf) => {
     if (!gltf.scene) {
         console.warn('Bounds GLTF model not found or failed to load.');
     }
@@ -58,6 +80,15 @@ const gameState = {
     aiThinking: false // Track if AI is currently "thinking"
 };
 
+// Load BG model
+const bgGltfLoader = new GLTFLoader();
+bgGltfLoader.load('assets/3D models/BG mesh (UW).glb', (gltf) => {
+    if (!gltf.scene) {
+        console.warn('BG GLTF model not found or failed to load.');
+    }
+    const bgModel = gltf.scene;
+    scene.add(bgModel);
+})
 // Create AI instance
 const aiPlayer = new AIPlayer('random');
 
@@ -128,7 +159,7 @@ let oPieceModel = null;
 
 // Load X model
 const xPieceModelLoader = new GLTFLoader();
-xPieceModelLoader.load('assets/3D models/Xs mesh.glb', (gltf) => {
+xPieceModelLoader.load('assets/3D models/Xs mesh (UW).glb', (gltf) => {
     if (!gltf.scene) {
         console.warn('X GLTF model not found or failed to load.');
     }
@@ -139,7 +170,7 @@ xPieceModelLoader.load('assets/3D models/Xs mesh.glb', (gltf) => {
 
 // Load O model
 const oPieceModelLoader = new GLTFLoader();
-oPieceModelLoader.load('assets/3D models/Os mesh.glb', (gltf) => {
+oPieceModelLoader.load('assets/3D models/Os mesh (UW).glb', (gltf) => {
     if (!gltf.scene) {
         console.warn('O GLTF model not found or failed to load.');
     }
@@ -290,7 +321,7 @@ async function makeAIMove() {
 function placePiece(intersectedTile, tileName) {
     const pieceClone = gameState.currentPlayer === 'player1' 
         ? xPieceModel.clone() 
-        : oPieceModel.clone();
+        : oPieceModel.clone();   
 
     pieceClone.position.copy(intersectedTile.position);
     scene.add(pieceClone);
