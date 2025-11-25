@@ -8,6 +8,7 @@ import { SkinManager } from './skinmanager.js';
 // Scene setup
 const scene = new THREE.Scene();
 
+
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 100);
 camera.position.z = 20;
 
