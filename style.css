@@ -2,9 +2,7 @@ body {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    border: 10px solid grey;
-    
-    
+    border: 10px solid grey;    
 }
 
 #gameContainer {
@@ -26,37 +24,7 @@ body {
     right: 20px;
     display: flex;
     gap: 10px;
-}
-
-#playerInfo {
-    position: absolute;
-    top: 200px;
-    left: -5px;
-    color: white;
-    font-size: 18px;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding-left: 20px;
-    padding-right: 40px;
-    border: #f0f0f0 solid 3px;
-    border-radius: 20px;
-    list-style: none;
-}
-
-#P1, #P2 {
-    transition: scale 0.3s ease, color 0.3s ease;
-    padding-bottom: 10px;
-    padding-top: 10px;
-    padding-right: 0px;
-    padding-left: 20px;
-    font-size: 20px;
-}
-
-#P1 {
-    color: #71E700FF;
-}
-
-#P2 {
-    color: white;
+    pointer-events: all;
 }
 
 #pauseMenu {
@@ -64,82 +32,153 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: rgba(97, 125, 136, 0.8);
+    background-color: #475557;
     color: white;
     padding: 100px 250px;
-    border: #f0f0f0 solid 5px;
-    border-radius: 40px;
+    border-radius: 20px;
     opacity: 0;
     text-align: center;
-    pointer-events: none;
+    pointer-events: auto;
     display: none;
 }
 
 #Message {
-    font-size: 50px;
+    font-size: 25px;
+    white-space: nowrap;
+    letter-spacing: 20px;
+    transform: translateY(-70px);
 }
 
 #resumeButton {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border: #f0f0f0 solid 3px;
-    border-radius: 25px;
+    margin-top: 10px;
+    border: solid;
+    border-radius: 10px;
+    padding: 20px;
     background: transparent;
-    font-size: 16px;
+    font-size: 36px;
     color: white;
     cursor: pointer;
-    pointer-events: none;
-    font-size: 50px;
+    pointer-events: auto;
+    letter-spacing: 15px;
+    white-space: nowrap;
+    transition: all 0.5s ease;
+    text-shadow: black 1px 10px 15px;
+    visibility: visible;
 }
 
-#restartButton, #pauseButton {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border: #f0f0f0 solid 3px;
-    border-radius: 20px;
+#restartButton {
+    margin-top: 40px;
+    border: solid;
+    border-radius: 10px;
+    padding: 20px;
     background: transparent;
-    font-size: 50px;
+    font-size: 36px;
     color: white;
     cursor: pointer;
-    pointer-events: all;
+    pointer-events: auto;
+    letter-spacing: 12px;
+    white-space: nowrap;
+    transition: all 0.5s ease;
+    text-shadow: black 1px 10px 15px;
 }
 
-#resumeButton:hover, #restartButton:hover, #pauseButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    scale: 1.2;
-}
-
-#gameModeSwitch {
-    position: absolute;
-    top: 400px;
-    left: -20px;
-}
-
-#modeButton {
+#pauseButton {
     margin-top: 20px;
+    margin-right: 10px;
     padding: 10px 20px;
     border: #f0f0f0 solid 3px;
     border-radius: 10px;
     background: transparent;
-    font-size: 20px;
+    font-size: 50px;
     color: white;
     cursor: pointer;
     pointer-events: all;
-    background-color: rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
 }
 
-#modeButton:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    scale: 1.05;
+#pauseButton:hover {
+    scale: 1.2;
+    transition: all 0.5s ease;
 }
 
-#modeButton.pvp {
-    background-color: rgba(113, 231, 0, 0.3);
-    border-color: #71E700FF;
+#restartButton:hover {
+    scale: 1.2;
 }
 
-#modeButton.pvc {
-    background-color: rgba(4, 39, 231, 0.3);
-    border-color: #0427E7FF;
+#resumeButton:hover {
+    scale: 1.2;
+}
+
+#startMenu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #F0C208;
+    padding: 15em;
+    opacity: 1;
+    border-radius: 20px;
+    pointer-events: all;
+}
+
+#startButton {
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: white;
+    cursor: pointer;
+    pointer-events: all;
+    font-size: 25px;
+    text-align: center;
+    cursor: pointer;
+    letter-spacing: 15px;
+    white-space: nowrap;
+    transition: all 0.5s ease;
+    text-shadow: black 1px 10px 15px;
+}
+
+#modeBtn {
+    padding-top: 50px;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: white;
+    cursor: pointer;
+    pointer-events: all;
+    font-size: 25px;
+    text-align: center;
+    cursor: pointer;
+    letter-spacing: 15px;
+    white-space: nowrap;
+    transition: all 0.5s ease;
+    text-shadow: black 1px 10px 15px;
+}
+
+#startButton:hover {
+    scale: 1.2;
+}
+
+#modeBtn:hover {
+    scale: 1.2;
+}
+
+#gameModeIndicator {
+    position: absolute;
+    border: solid;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: transparent;
+    color: white;
+    padding: 1em 5em;
+    opacity: 1;
+    border-radius: 10px;
+    pointer-events: all;    
+}
+
+#currentPlayer {
+    color: wheat;
+    scale: 1;
+    font-size: 30px;
+    letter-spacing: 10px;
+    white-space: nowrap;
 }

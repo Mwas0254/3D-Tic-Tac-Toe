@@ -60,27 +60,16 @@ controls.maxPolarAngle = Math.PI / 1.8;
 controls.minAzimuthAngle = -Math.PI / 16;
 controls.maxAzimuthAngle = Math.PI / 16;
 
-// Load Bounds GLTF model
-/* 
-const boundsGltfLoader = new GLTFLoader();
-boundsGltfLoader.load('assets/3D models/Bounds (GN).glb', (gltf) => {
-    if (!gltf.scene) {
-        console.warn('Bounds GLTF model not found or failed to load.');
-    }
-    const boundsModel = gltf.scene;
-    scene.add(boundsModel);
-});
-*/
-
 // Game state object
 const gameState = {
-    isPaused: false,
+    startMenuMode: true,
+    isPaused: true,
     currentPlayer: 'player1',
     gameActive: true,
     occupiedTiles: new Map(),
     movesCount: 0,
     canPlacePieces: true,
-    gameMode: 'pvp', // 'pvp' for player vs player, 'pvc' for player vs computer
+    gameMode: 'pvc', // 'pvp' for player vs player, 'pvc' for player vs computer
     aiThinking: false // Track if AI is currently "thinking"
 };
 
@@ -173,42 +162,20 @@ function loadOPieces(path) {
     });
 }
 
-// Load BG model
-/*
-const bgGltfLoader = new GLTFLoader();
-bgGltfLoader.load('assets/3D models/BG mesh (GN).glb', (gltf) => {
-    if (!gltf.scene) {
-        console.warn('BG GLTF model not found or failed to load.');
-    }
-    const bgModel = gltf.scene;
-    scene.add(bgModel);
-})
-*/
-
-// Define updateTurnIndicator BEFORE calling it
+// updateTurnIndicator
 function updateTurnIndicator() {
-    const player1 = document.getElementById('P1');
-    const player2 = document.getElementById('P2');
+    const currentPlayer = document.getElementById('currentPlayer');
     
     if (gameState.currentPlayer === 'player1') {
         // Player 1's turn - highlight P1
-        player1.style.scale = "1.3";
-        player1.style.color = "#71E700FF"; // Bright green
-        player1.style.transition = "scale 0.3s ease, color 0.3s ease";
-        
-        player2.style.scale = "1";
-        player2.style.color = "white"; // Dimmed
-        player2.style.transition = "scale 0.3s ease, color 0.3s ease";
-        
+        currentPlayer.textContent = 'P1';
+        currentPlayer.style.color = 'blue';
+        currentPlayer.style.transition = "color 0.3s ease";
     } else {
         // Player 2's turn - highlight P2
-        player1.style.scale = "1";
-        player1.style.color = "white"; // Dimmed
-        player1.style.transition = "scale 0.3s ease, color 0.3s ease";
-        
-        player2.style.scale = "1.3";
-        player2.style.color = "#0427E7FF"; // Bright blue
-        player2.style.transition = "scale 0.3s ease, color 0.3s ease";
+        currentPlayer.textContent = 'P2';
+        currentPlayer.style.color = 'wheat';
+        currentPlayer.style.transition = "color 0.3s ease";
     }
 }
 
@@ -227,59 +194,41 @@ const tilePositionMap = {
     'T9': { row: 2, col: 2, index: 8 }
 };
 
-// Load Tic Tac Toe Play Tiles GLTF model
-/*
-const tilesGltfLoader = new GLTFLoader();
-tilesGltfLoader.load('assets/3D models/PlayTiles mesh.glb', (gltf) => {
-    if (!gltf.scene) {
-        console.warn('playTiles GLTF model not found or failed to load.');
-    }
-    const playTiles = gltf.scene;
-    scene.add(playTiles);
-
-    playTiles.traverse((child) => {
-        if (child.isMesh) {
-            tileObjs.push(child);
-            console.log(`Loaded tile object: ${child.name}`);
-        }
-    });
-});
-*/
-
-// Load X model
-/*
-const xPieceModelLoader = new GLTFLoader();
-xPieceModelLoader.load('assets/3D models/Xs mesh (GN) 2.glb', (gltf) => {
-    if (!gltf.scene) {
-        console.warn('X GLTF model not found or failed to load.');
-    }
-    xPieceModel = gltf.scene;
-    scene.add(xPieceModel);
-    xPieceModel.position.set(-1, -40, 0);
-});
-*/
-
-// Load O model
-/*
-const oPieceModelLoader = new GLTFLoader();
-oPieceModelLoader.load('assets/3D models/Os mesh (GN) 2.glb', (gltf) => {
-    if (!gltf.scene) {
-        console.warn('O GLTF model not found or failed to load.');
-    }
-    oPieceModel = gltf.scene;
-    scene.add(oPieceModel);
-    oPieceModel.position.set(1, -40, 0);
-});
-*/
-
 // Button functionality
 const pauseButton = document.getElementById('pauseButton');
 const resumeButton = document.getElementById('resumeButton');
 const restartButton = document.getElementById('restartButton');
 const pauseMenu = document.getElementById('pauseMenu');
+const startMenu = document.getElementById('startMenu');
+const startButton = document.getElementById('startButton');
+const modeButton = document.getElementById('modeBtn');
+
+resumeButton.style.visibility = 'visible';
+
+// Check If We're In Start Menu State
+if (gameState.startMenuMode) {
+    pauseButton.style.pointerEvents = 'none'
+};
+
+// Start Button Listener
+startButton.addEventListener('click', () => {
+    // Delay placing pieces for 0.5s
+setTimeout(() => {
+    gameState.canPlacePieces = true
+    pauseButton.style.pointerEvents = 'all'
+}, 500);
+    
+startMenu.style.opacity = '0';
+startMenu.style.pointerEvents = 'none';
+startButton.style.pointerEvents = 'none';
+modeButton.style.pointerEvents = 'none';
+gameState.isPaused = false;
+gameState.startMenuMode = false;
+});
 
 // Pause button
 pauseButton.addEventListener('click', () => {
+    resumeButton.style.visibility = 'visible';
     gameState.canPlacePieces = false;
     controls.enabled = false;
     pauseMenu.style.opacity = '1';
@@ -288,27 +237,24 @@ pauseButton.addEventListener('click', () => {
     gameState.isPaused = true;
 });
 
-// Resume/Restart button
+// Resume button
 resumeButton.addEventListener('click', () => {
-    if (!gameState.gameActive) {
-        resetGame();
-    } else {
-        setTimeout(() => gameState.canPlacePieces = true, 250);
-        controls.enabled = true;
-        pauseMenu.style.opacity = '0';
-        pauseMenu.style.display = 'none';
-        resumeButton.style.pointerEvents = 'none';
-        gameState.isPaused = false;
-    }
+    pauseMenu.style.opacity = '0';
+    setTimeout(() => {
+        controls.enabled = true
+        gameState.canPlacePieces = true 
+    }); 
+    resumeButton.style.pointerEvents = 'none';
+    gameState.isPaused = false;
+    resumeButton.pointerEvents = 'none';
+    restartButton.pointerEvents = 'none';
 });
+
 
 // Restart button
 restartButton.addEventListener('click', resetGame);
 
-const modeButton = document.getElementById('modeButton');
-
 // Initializing game mode
-initializeGameMode();
 
 // Game mode switch functionality
 modeButton.addEventListener('click', switchGameMode);
@@ -319,30 +265,16 @@ function switchGameMode() {
         return;
     }
     
-    if (gameState.gameMode === 'pvp') {
-        // Switch to Player vs Computer
-        gameState.gameMode = 'pvc';
-        modeButton.textContent = "VS PLAYER";
-        modeButton.classList.remove('pvp');
-        modeButton.classList.add('pvc');
-        
-        // Update player 2 label
-        const player2 = document.getElementById('P2');
-        player2.textContent = "COMP - O";
-        
-        console.log("Switched to Player vs Computer mode");
-    } else {
+    if (gameState.gameMode === 'pvc') {
         // Switch to Player vs Player
         gameState.gameMode = 'pvp';
-        modeButton.textContent = "VS COMPUTER";
-        modeButton.classList.remove('pvc');
-        modeButton.classList.add('pvp');
-        
-        // Update player 2 label
-        const player2 = document.getElementById('P2');
-        player2.textContent = "P2 - O";
-        
+        modeButton.textContent = "VS P2";       
         console.log("Switched to Player vs Player mode");
+    } else {
+        // Switch to Player vs Computer
+        gameState.gameMode = 'pvc';
+        modeButton.textContent = "VS COMPUTER";        
+        console.log("Switched to Player vs Computer mode");
     }
     
     // Update turn indicator to reflect current state
@@ -488,12 +420,10 @@ function endGame(result) {
     
     const pauseMenu = document.getElementById('pauseMenu');
     const message = document.getElementById('Message');
-    const resumeButton = document.getElementById('resumeButton');
     
+    resumeButton.style.visibility = 'hidden';
     pauseMenu.style.opacity = '1';
     pauseMenu.style.display = 'block';
-    resumeButton.style.pointerEvents = 'auto';
-    resumeButton.textContent = "Restart Game";
     
     if (result === 'player1') {
         message.textContent = "Player 1 Wins!";
@@ -542,8 +472,8 @@ async function resetGame() {
 
     pauseMenu.style.opacity = '0';
     pauseMenu.style.display = 'none';
-    message.textContent = "Game Paused";
-    resumeButton.textContent = "Resume";
+    message.textContent = "GAME PAUSED";
+    resumeButton.textContent = "RESUME";
     resumeButton.style.pointerEvents = 'none';
 
     // Reset camera position and controls
@@ -566,18 +496,6 @@ async function resetGame() {
 }
 
 loadSkin('classic');
-
-// Initialize the mode button on game start
-function initializeGameMode() {
-    // Set initial button state
-    if (gameState.gameMode === 'pvp') {
-        modeButton.textContent = "VS COMPUTER";
-        modeButton.classList.add('pvp');
-    } else {
-        modeButton.textContent = "VS PLAYER";
-        modeButton.classList.add('pvc');
-    }
-}
 
 // Animation loop
 function animate() {

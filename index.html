@@ -20,26 +20,28 @@
         <!-- pause and restart buttons-->
          <div id="buttons">
           <button id="pauseButton">II</button>
-          <button id="restartButton">⟲</button>
-          
-          <!-- player info -->
-          <list id="playerInfo">
-            <li id="P1">P1 - X </li>
-            <li id="P2">P2 - O </li>
-          </list>
-
-          <!-- PVP / PVC SWITCH -->
-          <div id="gameModeSwitch">
-            <button id="modeButton">VS COMPUTER</button>
-          </div>
-
+  
          </div>
         <!-- pause menu -->  
-         <div id="pauseMenu" class="menu">
-           <h2 id="Message">Game Paused</h2>
-           <button id="resumeButton">Resume</button>      
-       </div>
-   
+          <div id="pauseMenu" class="menu">
+           <h3 id="Message">GAME PAUSED</h2>
+           <button id="resumeButton">RESUME</button>
+           <button id="restartButton">RESTART</button>      
+          </div>
+
+        <!-- start menu -->
+         <div id="startMenu">
+          <button id="startButton">START GAME</button>
+          <button id="modeBtn">VS COMPUTER</button>
+         </div>
+
+        <!-- Current Player -->
+         <div id="gameModeIndicator">
+          <h2 id="currentPlayer">P1</h2>
+         </div>
+
+      </div>
+      
     </div>
     <script type="module" src="main.js"></script>
   </body>
