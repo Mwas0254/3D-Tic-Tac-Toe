@@ -216,7 +216,7 @@ startButton.addEventListener('click', () => {
 setTimeout(() => {
     gameState.canPlacePieces = true
     pauseButton.style.pointerEvents = 'all'
-}, 500);
+}, 750);
     
 startMenu.style.opacity = '0';
 startMenu.style.pointerEvents = 'none';
@@ -243,7 +243,7 @@ resumeButton.addEventListener('click', () => {
     setTimeout(() => {
         controls.enabled = true
         gameState.canPlacePieces = true 
-    }); 
+    }, 750); 
     resumeButton.style.pointerEvents = 'none';
     gameState.isPaused = false;
     resumeButton.pointerEvents = 'none';
@@ -426,18 +426,18 @@ function endGame(result) {
     pauseMenu.style.display = 'block';
     
     if (result === 'player1') {
-        message.textContent = "Player 1 Wins!";
+        message.textContent = "PLAYER 1 WINS!";
         console.log("Player 1 wins!");
     } else if (result === 'player2') {
         if (gameState.gameMode === 'pvc') {
-            message.textContent = "Computer Wins!";
+            message.textContent = "COMPUTER WINS!";
             console.log("Computer wins!");
         } else {
-            message.textContent = "Player 2 Wins!";
+            message.textContent = "PLAYER 2 WINS!";
             console.log("Player 2 wins!");
         }
     } else {
-        message.textContent = "It's a Draw!";
+        message.textContent = "IT'S A DRAW!";
         console.log("It's a draw!");
     }
     
